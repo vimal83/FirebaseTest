@@ -16,8 +16,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
@@ -83,6 +85,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 Log.d("Success","Auth log successfully");
                 Log.d("Success email",mAuth.getCurrentUser().getEmail());
+
+                String facebookUserId = "";
+                // find the Facebook profile and get the user's id
+                for(UserInfo profile : user.getProviderData()) {
+                    // check if the provider id matches "facebook.com"
+                    if(FacebookAuthProvider.PROVIDER_ID.equals(profile.getProviderId())) {
+                        facebookUserId = profile.getUid();
+                        // construct the URL to the profile picture, with a custom height
+// alternatively, use '?type=small|medium|large' instead of ?height=
+                        String photoUrl = "https://graph.facebook.com/" + facebookUserId + "/picture?height=500&width=500";
+
+                       ImageView profilePicture = (ImageView) findViewById(R.id.imgProfile);
+// (optional) use Picasso to download and show to image
+                        Picasso.with(this).load(photoUrl).into(profilePicture);
+                    }
+                }
+
 
                 // ...
             } else {
